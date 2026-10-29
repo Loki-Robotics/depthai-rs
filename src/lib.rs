@@ -497,6 +497,7 @@ pub use depthai_macros::depthai_threaded_host_node;
 pub use depthai_macros::native_node_wrapper;
 
 pub mod camera;
+pub mod camera_control;
 pub mod common;
 pub mod device;
 pub mod encoded_frame;
@@ -528,6 +529,7 @@ pub use device::{
 };
 pub use pipeline::Pipeline;
 
+pub use camera_control::CameraControl;
 pub use common::{CameraExposureOffset, CameraImageOrientation};
 pub use encoded_frame::{EncodedFrame, EncodedFrameProfile, EncodedFrameQueue, EncodedFrameType};
 pub use gate::{GateControl, GateNode};

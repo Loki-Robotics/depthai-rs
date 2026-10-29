@@ -8,6 +8,7 @@ pub use crate::common::{
     CameraBoardSocket, CameraExposureOffset, CameraImageOrientation, CameraSensorType,
     ImageFrameType, ResizeMode,
 };
+use crate::camera_control::CameraControl;
 use crate::error::{Result, clear_error_flag, last_error, take_error_if_any};
 use crate::pipeline::device_node::CreateInPipelineWith;
 use crate::pipeline::{Pipeline, PipelineInner};
@@ -368,6 +369,24 @@ impl CameraNode {
             return Err(err);
         }
         Ok(CameraImageOrientation::from_raw(raw))
+    }
+
+    /// Copy `control` into the node's initial control, applied to the sensor when the pipeline starts.
+    ///
+    /// Mirrors `dai::node::Camera::initialControl`. For changes at runtime, send a [`CameraControl`]
+    /// to the `inputControl` input queue instead.
+    pub fn set_initial_control(&self, control: &CameraControl) -> Result<()> {
+        clear_error_flag();
+        unsafe {
+            depthai::dai_camera_set_initial_control(
+                self.node.handle() as DaiCameraNode,
+                control.handle(),
+            )
+        };
+        if let Some(err) = take_error_if_any("failed to set camera initial control") {
+            return Err(err);
+        }
+        Ok(())
     }
 
     pub fn raw_num_frames_pool(&self) -> Result<i32> {

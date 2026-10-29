@@ -430,6 +430,12 @@ include_cpp! {
     generate!("dai::dai_camera_set_image_orientation")
     generate!("dai::dai_camera_get_image_orientation")
 
+    // CameraControl
+    generate!("dai::dai_camera_control_new")
+    generate!("dai::dai_camera_control_set_auto_exposure_compensation")
+    generate!("dai::dai_camera_control_set_sharpness")
+    generate!("dai::dai_camera_set_initial_control")
+
     // ModelZoo
     generate!("dai::dai_nn_model_description_from_yaml_file_json")
     generate!("dai::dai_nn_model_description_save_to_yaml_file_json")

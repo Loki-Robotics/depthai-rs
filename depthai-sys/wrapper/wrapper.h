@@ -615,6 +615,22 @@ API void dai_camera_set_image_orientation(DaiCameraNode camera, int orientation)
 API int dai_camera_get_image_orientation(DaiCameraNode camera);
 
 // ---------------------------------------------------------------------------
+// CameraControl
+// ---------------------------------------------------------------------------
+
+// CameraControl message. The returned handle is a `std::shared_ptr<dai::CameraControl>*`
+// (a `DaiBuffer` subtype). Caller must release via `dai_buffer_release`.
+// Apply it before start with `dai_camera_set_initial_control`, or at runtime by sending it
+// to the camera's `inputControl` input queue with `dai_input_queue_send_buffer`.
+API DaiBuffer dai_camera_control_new();
+// Auto exposure compensation, range -9..9, default 0. Positive makes the image brighter.
+API void dai_camera_control_set_auto_exposure_compensation(DaiBuffer control, int compensation);
+// ISP sharpness, range 0..4, default 1.
+API void dai_camera_control_set_sharpness(DaiBuffer control, int sharpness);
+// Copies `control` into the camera's `initialControl`, applied to the sensor when the pipeline starts.
+API void dai_camera_set_initial_control(DaiCameraNode camera, DaiBuffer control);
+
+// ---------------------------------------------------------------------------
 // ModelZoo
 // ---------------------------------------------------------------------------
 

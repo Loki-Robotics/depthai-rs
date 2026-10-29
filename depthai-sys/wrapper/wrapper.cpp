@@ -7683,4 +7683,73 @@ int dai_camera_get_image_orientation(DaiCameraNode camera) {
 #endif
 }
 
+// ---------------------------------------------------------------------------
+// CameraControl
+// ---------------------------------------------------------------------------
+
+// Returns the CameraControl behind a DaiBuffer handle, or nullptr with last_error set.
+static std::shared_ptr<dai::CameraControl> _dai_as_camera_control(DaiBuffer control, const char* function_name) {
+    if (!control) {
+        last_error = std::string(function_name) + ": null control";
+        return nullptr;
+    }
+    auto buf = static_cast<std::shared_ptr<dai::Buffer>*>(control);
+    auto ctrl = std::dynamic_pointer_cast<dai::CameraControl>(*buf);
+    if (!ctrl) {
+        last_error = std::string(function_name) + ": buffer is not a CameraControl";
+    }
+    return ctrl;
+}
+
+DaiBuffer dai_camera_control_new() {
+    try {
+        auto ctrl = std::make_shared<dai::CameraControl>();
+        return new std::shared_ptr<dai::Buffer>(std::static_pointer_cast<dai::Buffer>(ctrl));
+    } catch (const std::exception& e) {
+        last_error = std::string("dai_camera_control_new failed: ") + e.what();
+        return nullptr;
+    }
+}
+
+void dai_camera_control_set_auto_exposure_compensation(DaiBuffer control, int compensation) {
+    auto ctrl = _dai_as_camera_control(control, "dai_camera_control_set_auto_exposure_compensation");
+    if (!ctrl) {
+        return;
+    }
+    try {
+        ctrl->setAutoExposureCompensation(compensation);
+    } catch (const std::exception& e) {
+        last_error = std::string("dai_camera_control_set_auto_exposure_compensation failed: ") + e.what();
+    }
+}
+
+void dai_camera_control_set_sharpness(DaiBuffer control, int sharpness) {
+    auto ctrl = _dai_as_camera_control(control, "dai_camera_control_set_sharpness");
+    if (!ctrl) {
+        return;
+    }
+    try {
+        ctrl->setSharpness(sharpness);
+    } catch (const std::exception& e) {
+        last_error = std::string("dai_camera_control_set_sharpness failed: ") + e.what();
+    }
+}
+
+void dai_camera_set_initial_control(DaiCameraNode camera, DaiBuffer control) {
+    if (!camera) {
+        last_error = "dai_camera_set_initial_control: null camera";
+        return;
+    }
+    auto ctrl = _dai_as_camera_control(control, "dai_camera_set_initial_control");
+    if (!ctrl) {
+        return;
+    }
+    try {
+        auto cam = static_cast<dai::node::Camera*>(camera);
+        cam->initialControl = *ctrl;
+    } catch (const std::exception& e) {
+        last_error = std::string("dai_camera_set_initial_control failed: ") + e.what();
+    }
+}
+
 } // namespace dai
